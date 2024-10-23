@@ -22,10 +22,17 @@ const {
 } = options.bar.customModules.updates;
 
 const pendingUpdates: VariableType<string> = Variable(' 0');
+const toolTipText = Variable('No updates available');
 
-const processUpdateCount = (updateCount: string): string => {
-    if (!padZero.value) return updateCount;
-    return `${updateCount.padStart(2, '0')}`;
+const processUpdateCount = (value: string): string => {
+    const text = JSON.parse(value);
+
+    toolTipText.setValue(text.tooltip);
+
+    const totalUpdates = text.total;
+
+    if (!padZero.value) return totalUpdates;
+    return `${totalUpdates.padStart(2, '0')}`;
 };
 
 pollVariableBash(
@@ -39,7 +46,7 @@ pollVariableBash(
 export const Updates = (): BarBoxChild => {
     const updatesModule = module({
         textIcon: icon.bind('value'),
-        tooltipText: pendingUpdates.bind('value').as((v) => `${v} updates available`),
+        tooltipText: toolTipText.bind('value'),
         boxClass: 'updates',
         label: pendingUpdates.bind('value'),
         showLabelBinding: label.bind('value'),
